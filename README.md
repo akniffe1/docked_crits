@@ -6,7 +6,7 @@ Modify ' ENV DOMAIN ' to your environment on the Dockerfile and the variable 'DO
 ## Start Procedure:
 ```` docker-compose up ````
 
-```` docker-compose run crits-web sh config_application.sh ````
+```` docker-compose run crits-web sh /data/crits_mods/config_application.sh ````
 
 ```` docker-compose up ````
 
