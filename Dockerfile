@@ -1,6 +1,6 @@
 # Read the README first, there are several configurable attributes available 
 # to speed up your build and deploy processes.
-FROM centos:7
+FROM centos:latest
 MAINTAINER Knifehands
 
 ENV container docker
@@ -11,7 +11,7 @@ USER root
 
 RUN echo 'Update the image and get the basics' && \
     yum -y install deltarpm && \
-    yum -y update && \
+#    yum -y update && \  # pointless step now that we're using latest
     yum -y install wget
 WORKDIR /tmp
 RUN echo 'Grabbing EPEL and CERT Forensics Repos' && \
