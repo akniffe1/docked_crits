@@ -1,12 +1,13 @@
 # run me with ````docker-compose run crits-web  ````
-#
+#   #  - "443:443"
 crits-web:
   build: .
   container_name: crits-web
   volumes:
   - ./certs:/data/certs
+  - ./logs:/data/crits/crits.log
   ports:
-  - "443:443"
+  - "8080:8080"
   links:
   - db
 db:

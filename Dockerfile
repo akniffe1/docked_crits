@@ -66,73 +66,36 @@ RUN echo 'Installing Packages' && yum clean all && yum -y install make \
 
 RUN mkdir /data && \
     mkdir /data/certs && \
+    mkdir /data/crits && \
     cd /data && \
     useradd -r -s /bin/false crits && \
     chown -R crits /data && \
     usermod apache -G crits
 ADD ./certs /data/certs
-USER crits
 ADD crits_mods /data/crits_mods/
+RUN pip install -r /data/crits_mods/requirements.txt  # todo remove this after dev work
+ADD ./pubcrits /data/crits
 RUN cd /data && \
-    git clone -b 4_fts https://github.com/akniffe1/crits.git && \
-    git clone -b stable_4 https://github.com/crits/crits_services.git && \
-    touch /data/crits/logs/crits.log
- # Hanging onto this for the magical day when the services bootstrap works on CentOS 7
- #   /usr/bin/cp /data/crits_mods/service_bootstrap.sh /data/crits_services/bootstrap
-RUN chown -R crits /data/crits/logs && \
-    chmod 644 /data/crits/logs/crits.log
+    chown -R crits /data/crits/ && \
+   # git clone https://eden.emrsn.org/git/adam_kniffen/crits.git && \
+   # git clone -b stable_4 https://github.com/crits/crits_services.git && \
+   cp /data/crits_mods/crits.log /data/crits/logs/ && \
+   chmod 644 /data/crits/logs/crits.log
 
-#### Install Python Dependencies and Prep the Webserver####
 
-USER root
+#### Install Python Dependencies and Prep the Webserver#### # todo enable this after dev_work
+
 WORKDIR /data/crits
-RUN echo 'Installing Python Dependencies' && \
-    pip install --upgrade pip && \
-    pip install -r requirements.txt
-RUN echo 'Prep the HTTPD Environment' && \
-    cp extras/httpd24.conf /etc/httpd/conf/httpd.conf && \
-    cp extras/httpd24_ssl.conf /etc/httpd/conf.d/ssl.conf && \
-    echo 'Generate a Self Signed Cert. You can replace this by loading a host volume containing your proper cert and private key etc...' && \
-    cd /data/certs && \
-    openssl req -nodes -newkey rsa:2048 -keyout /etc/pki/tls/private/crits.plain.key -out /data/certs/new.cert.csr -subj "/C=US/ST=Arizona/L=Anytown/O=Awesome/OU=Awesomer/CN=crits.${DOMAIN}" && \
-    openssl x509 -in /data/certs/new.cert.csr -out /etc/pki/tls/certs/crits.crt -req -signkey /etc/pki/tls/private/crits.plain.key -days 1825
-
-#### Install Service Dependencies ####
-#### Not a fan of this approach, but the bootstrap leaves me no choices here #### 
-
-RUN yum -y install pyew \
-    python-chm \
-    libchm1 \ 
-    clamav \ 
-    exiftool \
-    antiword \
-    poppler-utils \
-    python-pillow \ 
-    m2crypto \
-    python-m2ext \
-    numpy
-RUN pip install oletools \
-    bitstring \
-    mod_pywebsocket \
-    Pyinstaller \
-    shodan \ 
- #   stix-validator \
-    libtaxii==1.1.102 \
-    cybox==2.1.0.11 \
-    stix==1.1.1.5 \
-    pylzma \
-    pythonwhois
-RUN cd /data/ && \
-    git clone https://github.com/MITRECND/snugglefish.git && \
-    cd snugglefish && make && \
-    cd python && \
-    python setup.py install
-RUN cd /data/ && \
-    wget http://pefile.googlecode.com/files/pefile-1.2.10-139.tar.gz && \
-    tar -xvzf pefile-1.2.10-139.tar.gz && \
-    cd pefile-1.2.10-139 && \
-    python setup.py build && \
-    python setup.py install
+#RUN echo 'Installing Python Dependencies' && \
+#    pip install --upgrade pip && \
+#    pip install -r requirements.txt
+#RUN echo 'Prep the HTTPD Environment' && \
+#    cp /data/crits_mods/httpd24.conf /etc/httpd/conf/httpd.conf && \
+#    cp /data/crits_mods/httpd24_ssl.conf /etc/httpd/conf.d/ssl.conf && \
+#    echo 'Generate a Self Signed Cert. You can replace this by loading a host volume containing your proper cert and private key etc...' && \
+#    cd /data/certs && \
+#    openssl req -nodes -newkey rsa:2048 -keyout /etc/pki/tls/private/crits.plain.key -out /data/certs/new.cert.csr -subj "/C=US/ST=Arizona/L=Anytown/O=Awesome/OU=Awesomer/CN=crits.${DOMAIN}" && \
+#    openssl x509 -in /data/certs/new.cert.csr -out /etc/pki/tls/certs/crits.crt -req -signkey /etc/pki/tls/private/crits.plain.key -days 1825
 
 
 #### Prepare the Database ####
@@ -145,5 +108,7 @@ RUN cp crits/config/database_example.py crits/config/database.py && \
 
 #### Light the fires and kick the tires ####
 
-CMD ["/usr/sbin/httpd", "-D", "FOREGROUND"] 
-EXPOSE 443
+# CMD ["/usr/sbin/httpd", "-D", "FOREGROUND"] # todo enable this after dev_work
+#EXPOSE 443  # todo enable this after dev_work
+#ENTRYPOINT python manage.py runserver 0.0.0.0:8080
+EXPOSE 8080
