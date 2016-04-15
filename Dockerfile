@@ -102,7 +102,7 @@ WORKDIR /data/crits
 
 RUN cp crits/config/database_example.py crits/config/database.py && \
     SC=$(cat /dev/urandom | LC_CTYPE=C tr -dc 'abcdefghijklmnopqrstuvwxyz0123456789!@#%^&*(-_=+)' | fold -w 50 | head -n 1) && \
-    SE=$(echo ${SC} | sed -e 's/\\/\\\\/g' | sed -e 's/\//\\\//g' | sed -e 's/&/\\\&/g') && \
+    SE=$(echo ${SC} | sed -e 's/\\/\\\\/g' | sed -e 's/\//\\\//g' | sed -e 's/&/\\&/g') && \
     sed -i -e "s/^\(SECRET_KEY = \).*$/\1\\'${SE}'/1" crits/config/database.py && \
     sed -i -e "s/^\(MONGO_HOST = \).*$/\1\os.environ['MONGODB_PORT_27017_TCP_ADDR']/1" crits/config/database.py
 
