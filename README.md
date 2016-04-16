@@ -14,6 +14,8 @@ Configure CRITs
 Run the webserver using the Django Runserver (for development only)
 ```` docker-compose run crits-web python manage.py runserver 0.0.0.0:8080 ````
 
+Run the webserver using HTTPD
+```` docker-compose run crits-web /usr/bin/httpd -D FOREGROUND ````
 
 # TODO:
 
