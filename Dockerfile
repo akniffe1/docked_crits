@@ -7,10 +7,9 @@ ENV container docker
 ENV DOMAIN example.com
 
 #### Install the Basics ####
-RUN yum -y install wget
-RUN rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt && \
-    yum -y install epel-release && \
-    wget https://forensics.cert.org/cert-forensics-tools-release-el7.rpm && \
+#RUN rpm --import http://apt.sw.be/RPM-GPG-KEY.dag.txt && \
+RUN yum -y install epel-release && \
+    curl -O https://forensics.cert.org/cert-forensics-tools-release-el7.rpm && \
     rpm -i cert-forensics-tools-release-el7.rpm && \
     rm cert-forensics-tools-release-el7.rpm
 RUN yum -y install make \
